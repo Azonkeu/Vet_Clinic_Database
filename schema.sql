@@ -7,7 +7,14 @@ CREATE TABLE animals(
 	escape_attempts   INT NOT NULL,
 	neutered          BOOLEAN NOT NULL,
 	weight_kg         DECIMAL NOT NULL,
-    species           VARCHAR NOT NULL
+	species_id        INT,
+	owner_id          INT
+  CONSTRAINT fk_species
+    FOREIGN KEY (species_id) 
+      REFERENCES species(id),
+	CONSTRAINT fk_owners
+    FOREIGN KEY (owner_id) 
+      REFERENCES owners(id)
 );
 
 CREATE TABLE owners(
@@ -22,3 +29,4 @@ CREATE TABLE species(
 		name    VARCHAR(255) NOT NULL,
 		PRIMARY KEY(id)
 );
+
