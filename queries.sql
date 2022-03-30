@@ -151,57 +151,79 @@ JOIN owners o ON o.id = owner_id
 GROUP BY o.full_name, owner_id
 HAVING COUNT(name) = 3
 
-
-SELECT vet.name AS vet_name, an.name AS animal_name
-  FROM visits v JOIN animals an ON an.id = v.animal_id
-  JOIN vets vet ON vet.id = v.vet_id
-  WHERE vet.name = 'William Tatcher'
-  ORDER BY v.date_of_visit DESC LIMIT 1;
+/* Who was the last animal seen by William Tatcher */
+SELECT a.name, v.animal_id, v.date_of_visit 
+FROM visits v
+JOIN animals a ON v.animal_id = a.id
+WHERE vete_id = 1 AND date_of_visit > '2021-01-01';
 
 -- Stephanie Mendez  animal visits
-SELECT vet.name as vet_name, COUNT(date_of_visit) 
-  FROM visits v JOIN vets vet ON v.vet_id = vet.id
-  WHERE name = 'Stephanie Mendez' GROUP BY vet.name;
+SELECT v.name, COUNT(a.name)
+FROM vets v
+JOIN visits z ON v.id = z.vete_id
+JOIN animals a ON a.id = z.animal_id
+GROUP BY v.name, z.vete_id
+HAVING z.vete_id = 3;
 
   --all vets and specialties
 
-  SELECT vets.name, species.name FROM vets JOIN specializations ON vets.id = specializations.vet_id JOIN species ON species.id = specializations.species_id;
+SELECT v.name, s.name
+FROM specializations z
+FULL JOIN vets v ON v.id = z.vet_id
+FULL JOIN species s ON s.id = z.specie_id
+WHERE v.id = 1 OR v.id = 2 OR v.id = 3 OR v.id = 4;
+
 
 
 --Stephanie Mendez 2020-04-01-2020-08-30
-SELECT an.name, vet.name AS vet_name, v.date_of_visit
-  FROM visits v JOIN animals an ON an.id = v.animal_id
-  JOIN vets vet ON vet.id = v.vet_id
-  WHERE vet.name = 'Stephanie Mendez' AND v.date_of_visit 
-    BETWEEN 'Apr 1, 2020' AND 'Aug 30, 2020';
+SELECT v.name, a.name, z.date_of_visit
+FROM vets v
+JOIN visits z ON v.id = z.vete_id
+JOIN animals a ON a.id = z.animal_id
+GROUP BY v.name, z.vete_id, a.name, z.date_of_visit
+HAVING z.vete_id = 3 AND z.date_of_visit > '2020-04-01' AND z.date_of_visit < '2020-08-30';
+
 
 --most visits 
-SELECT an.name, COUNT(an.name) AS most_visits
-  FROM visits v JOIN animals an ON an.id = v.animal_id
-  GROUP BY an.name ORDER BY most_visits DESC LIMIT 1;
+SELECT a.name, COUNT(z.date_of_visit)
+FROM animals a
+JOIN visits z ON a.id = z.animal_id
+GROUP BY a.name
+HAVING COUNT(Z.date_of_visit) > 3;
+
+
 
   --first visit Maisy Smith
-  SELECT an.name AS animal, vet.name AS vet, v.date_of_visit
-  FROM visits v JOIN animals an ON an.id = v.animal_id
-  JOIN vets vet ON vet.id = v.vet_id
-  WHERE vet.name = 'Maisy Smith' ORDER BY v.date_of_visit ASC LIMIT 1;
+SELECT a.name, s.name, v.date_of_visit 
+FROM visits v
+JOIN animals a ON v.animal_id = a.id
+JOIN vets s ON v.vete_id = s.id
+WHERE vete_id = 2 AND v.date_of_visit < '2019-01-31';
+
 
   --most recent visit
- SELECT an.id AS animal_id, an.name AS animal, an.date_of_birth, vet.id AS vet_id, vet.name AS vet, vet.age AS vet_age, date_of_visit
-  FROM visits v JOIN animals an ON an.id = v.animal_id
-  JOIN vets vet ON vet.id = v.vet_id ORDER BY v.date_of_visit DESC
-  LIMIT 1;
+SELECT a.name, s.name, v.date_of_visit 
+FROM visits v
+JOIN animals a ON v.animal_id = a.id
+JOIN vets s ON v.vete_id = s.id
+WHERE v.date_of_visit > '2021-05-01';
 
     --vet visit -no specialization
 
-SELECT vet.name AS vet, COUNT(*) FROM visits vis JOIN vets vet 
-    ON vet.id = vis.vet_id LEFT JOIN specializations s 
-    ON s.vet_id = vis.vet_id WHERE s.id IS NULL GROUP BY vet.name;
+SELECT COUNT(z.date_of_visit)
+FROM vets v
+JOIN visits z ON z.vete_id = v.id
+FULL JOIN specializations s ON s.vet_id = z.vete_id
+JOIN animals a ON a.id = z.animal_id
+WHERE s.specie_id != a.species_id OR s.specie_id IS NULL
+
 
 --Maisy smith specialty to consider
-SELECT vet.name AS vet, sp.name AS species, COUNT(sp.name)
-  FROM visits v JOIN animals a ON a.id = v.animal_id
-  JOIN vets vet ON vet.id = v.vet_id
-  JOIN species sp ON sp.id = a.species_id
-  WHERE vet.name = 'Maisy Smith' GROUP BY vet.name, sp.name
-  ORDER BY COUNT DESC LIMIT 1;
+SELECT v.name, x.name, COUNT(a.species_id)
+FROM vets v
+JOIN visits z ON z.vete_id = v.id
+FULL JOIN specializations s ON s.vet_id = z.vete_id
+JOIN animals a ON a.id = z.animal_id
+JOIN species x ON x.id = a.species_id
+GROUP BY v.name, a.species_id, x.name, s.specie_id
+HAVING COUNT(a.species_id) > 3 AND s.specie_id IS NULL;
